@@ -13,18 +13,43 @@ int main(int argc, char const *argv[])
         treeInd.inserir(v[i]);
     */
     cout << "t: " << treeInd.grau_max << endl;
-    
-    treeInd.inserir(15);
-    treeInd.inserir(7);
+    cout << "INSERIR---------------------------------------"<<endl;
+    /*
+    treeInd.inserir(10);
+    treeInd.print();
+    treeInd.inserir(20);
+    treeInd.print();
+    treeInd.inserir(30);
+    treeInd.print();
+    treeInd.inserir(40);
+    treeInd.print();
     treeInd.inserir(1);
     treeInd.print();
+    treeInd.inserir(50);
+    treeInd.print();
+    */
+    treeInd.inserir(10);
+    treeInd.printTree();
+    treeInd.inserir(20);
+    treeInd.printTree();
+    treeInd.inserir(30);
+    treeInd.printTree();
+    treeInd.inserir(40);
+    treeInd.printTree();
+    treeInd.inserir(1);
+    treeInd.printTree();
+    treeInd.inserir(50);
+    treeInd.printTree();
 
-    cout << "contem 5: " << treeInd.pesquisar(5) << endl;
-    cout << "contem 15: " << treeInd.pesquisar(15) << endl;
-    cout << "contem 7: " << treeInd.pesquisar(7) << endl;
-    cout << "contem 1: " << treeInd.pesquisar(1) << endl;
+    cout << "\nBUSCA---------------------------------------"<<endl;
+    cout << 5 << ((treeInd.pesquisar(5))?" encontrado. ":" nao ") << endl;
+    cout << 1 << ((treeInd.pesquisar(30))?" encontrado. ":" nao ") << endl;
+    cout << 10 << ((treeInd.pesquisar(10))?" encontrado. ":" nao ") << endl;
+    cout << 20 << ((treeInd.pesquisar(20))?" encontrado. ":" nao ") << endl;
+    cout << 30 << ((treeInd.pesquisar(30))?" encontrado. ":" nao ") << endl;
+    cout << 40 << ((treeInd.pesquisar(30))?" encontrado. ":" nao ") << endl;
+    cout << 50 << ((treeInd.pesquisar(30))?" encontrado. ":" nao ") << endl;
+
     
-   
-
     return 0;
 }
