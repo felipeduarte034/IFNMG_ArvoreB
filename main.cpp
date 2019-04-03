@@ -4,73 +4,85 @@ using namespace std;
 
 int main(int argc, char const *argv[])
 {
-    //const int TAM = 10;
-    //int v[] = {5, 2, 7, 1, 4, 6, 9, 3, 8, 10};
-    ArvoreB treeInd(3);
+    int grau_min=0;
+
+    if(argc<2)
+    {
+        cout << "Ops! informe o parametro GRAU_MIN." << endl;
+        return 0;
+    }
+
+    grau_min = atoi(argv[1]);
+    if(grau_min<2)
+    {
+        cout << "Ops! o parametro GRAU_MIN tem q ser MAIO ou IGUAL a 2." << endl;
+        return 0;
+    }
+
     cout << "====ARVORE B====" << endl;
-    /*
-    for(int i=0; i<TAM; i++)
-        treeInd.inserir(v[i]);
-    */
-    cout << "t: " << treeInd.grau_max << endl;
-    cout << "INSERIR---------------------------------------"<<endl;
+    ArvoreB mytree(grau_min);
+
     ///*
-    treeInd.inserir(10);
-    treeInd.print();
-    treeInd.inserir(20);
-    treeInd.print();
-    treeInd.inserir(30);
-    treeInd.print();
-    treeInd.inserir(40);
-    treeInd.print();
-    treeInd.inserir(1);
-    treeInd.print();
-    treeInd.inserir(50);
-    treeInd.print();
-    treeInd.inserir(2);
-    treeInd.print();
-    treeInd.inserir(3);
-    treeInd.print();
-    treeInd.inserir(60);
-    treeInd.print();
-    treeInd.inserir(32);
-    treeInd.print();
-    treeInd.inserir(-1);
-    treeInd.print();
-
-    treeInd.inserir(31);
-    treeInd.print();
+    mytree.inserir(10);
+    mytree.imprimir();
+    cout << "raiz: ";
+    mytree.printRaiz();
+    mytree.inserir(20);
+    mytree.imprimir();
+    cout << "raiz: ";
+    mytree.printRaiz();
+    mytree.inserir(30);
+    mytree.imprimir();
+    cout << "raiz: ";
+    mytree.printRaiz();
+    mytree.inserir(40);
+    mytree.imprimir();
+    cout << "raiz: ";
+    mytree.printRaiz();
+    mytree.inserir(15);
+    mytree.imprimir();
+    cout << "raiz: ";
+    mytree.printRaiz();
+    mytree.inserir(5);
+    mytree.imprimir();
+    mytree.inserir(50);
+    mytree.imprimir();
+    mytree.inserir(60);
+    mytree.imprimir();
+    mytree.inserir(70);
+    mytree.imprimir();
+    mytree.inserir(25);
+    mytree.imprimir();
+    mytree.inserir(35);
+    mytree.imprimir();
+    mytree.inserir(18);
+    mytree.imprimir();
+    mytree.inserir(22);
+    mytree.imprimir();
+    mytree.inserir(80);
+    mytree.imprimir();
+    mytree.inserir(90);
+    mytree.imprimir();
+    mytree.inserir(100);
+    mytree.imprimir();
+    mytree.inserir(110);
+    mytree.imprimir();
+    mytree.inserir(120);
+    mytree.imprimir();
+    mytree.inserir(130);
+    mytree.imprimir();
+    mytree.inserir(19);
+    mytree.imprimir();
+    mytree.inserir(16);
+    mytree.imprimir();
+    mytree.inserir(21);
+    mytree.imprimir();
+    mytree.inserir(17);
+    mytree.imprimir();
     //*/
-    /*
-    treeInd.inserir(10);
-    treeInd.printTree();
-    treeInd.inserir(20);
-    treeInd.printTree();
-    treeInd.inserir(30);
-    treeInd.printTree();
-    treeInd.inserir(40);
-    treeInd.printTree();
-    treeInd.inserir(1);
-    treeInd.printTree();
-    treeInd.inserir(50);
-    treeInd.printTree();
-    treeInd.inserir(2);
-    treeInd.printTree();
-    */
-    
 
-    cout << "\nBUSCA---------------------------------------" << endl;
-    cout << 5 << ((treeInd.pesquisar(5))?" encontrado. ":" nao ") << endl;
-    cout << 1 << ((treeInd.pesquisar(1))?" encontrado. ":" nao ") << endl;
-    cout << 10 << ((treeInd.pesquisar(10))?" encontrado. ":" nao ") << endl;
-    cout << 20 << ((treeInd.pesquisar(20))?" encontrado. ":" nao ") << endl;
-    cout << 30 << ((treeInd.pesquisar(30))?" encontrado. ":" nao ") << endl;
-    cout << 40 << ((treeInd.pesquisar(40))?" encontrado. ":" nao ") << endl;
-    cout << 50 << ((treeInd.pesquisar(50))?" encontrado. ":" nao ") << endl;
-    cout << 2 << ((treeInd.pesquisar(2))?" encontrado. ":" nao ") << endl;
-
-    cout << "\nTEST---------------------------------------" << endl;
-    treeInd.printTest();
+    cout << "====RAIZ====" << endl;
+    mytree.printRaiz();
 
     return 0;
 }

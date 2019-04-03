@@ -2,609 +2,297 @@
 #define ARVOREB_H
 
 #include <iostream>
-#include <limits.h>
 using namespace std;
-
-class Nodo;
-
-class ReturnInfo
-{
-    public:
-        bool isBreak;
-        bool isInsert;
-        Nodo* esq;
-        Nodo* dir;
-        int mediana;
-        ReturnInfo()
-        {
-            isBreak=false;
-            isInsert=false;
-            esq=NULL;
-            dir=NULL;
-            mediana=INT_MAX;
-        }
-        ReturnInfo(bool is_break,bool is_insert,Nodo* p_esq,Nodo* p_dir,int chave_mediana)
-        {
-            isBreak=is_break;
-            isInsert=is_insert;
-            esq=p_esq;
-            dir=p_dir;
-            mediana=chave_mediana;
-        }
-};
 
 class Nodo
 {
-    private:
-        int* chaves; //#chaves[2t]
-        Nodo** filhos; //#filhos[2t+1] - vetor de ponteiros
-        int ivc; //indice vetor de chaves
-        int ivf; //indice vetor de filhos
-        
-        bool insertChave(int* v, int tam, int value) //insere ordenadamente o valor no vetor de chaves
+private:
+    int* chaves; //#chaves[2t-1]
+    Nodo** filhos; //#filhos[2t+1] - vetor de ponteiros
+    int len; //quantidade de chaves no nodo
+    //int maxc; //quantidade maxima de chaves
+    int maxf; //quantidade maxima de filhos
+public:
+    bool isFolha=false;
+    Nodo(int t) //t --> grau minimo
+    {
+        //maxc = 2*t-1;
+        maxf = 2*t;
+        chaves = new int[2*t-1];
+        filhos = new Nodo*[2*t];
+        len=0;
+        for(int i=0; i<maxf; i++)
+            filhos[i]=NULL;
+    }
+    bool is_folha()
+    {
+        for(int i=0; i<maxf; i++)
         {
-            int item=value;
-            for(int i=0; i<tam && i<=ivc; i++)
-            {
-                if(item<v[i])
-                {
-                    int temp=v[i];
-                    v[i]=item;
-                    item=temp;
-                }
-            }
-            ivc += 1;
-            return true;
+            if(filhos[i]!=NULL)
+                return false;
         }
-
-        bool insertMediana(Nodo* n, int value, Nodo* dir)
+        return true;
+    }
+    
+    void print()
+    {
+        for(int i=0; i<len; i++)
         {
-            int item=value;
-            Nodo* itemNodo=dir;
-
-            for(int i=0; i<quant_chaves; i++) //inseri o valor ordenadamente
-            {
-                if(item<n->chaves[i])
-                {
-                    int temp=n->chaves[i];
-                    n->chaves[i]=item;
-                    item=temp;
-                }
-            }
-            ivc += 1;
-            /*
-            //if(value==2)
-            {
-                cout << "VALORES NODO: ";
-                n->printNode();
-                cout << endl;
-            }
-            */
-            /*
-            //if(value==2)
-            {
-                cout << "dir: ";
-                dir->printNode();
-                cout << "\n\nPRINT 1: ";
-                for(int j=0; j<quant_filhos; j++)
-                {
-                    if(filhos[j] != NULL)
-                        filhos[j]->printNode();
-                    else
-                        cout << " NULL ";
-                }
-                cout << endl;
-            }
-            */
-
-            //inseri o novo Nodo Filho no intervalo correto, empurrando os demais
-            for(int i=0; i<quant_filhos; i++) //inseri o valor ordenadamente
-            {
-                if(n->filhos[i] == NULL)
-                {
-                    n->filhos[i]=itemNodo;
-                    break;
-                }
-                if(itemNodo->chaves[0] < n->filhos[i]->chaves[0])
-                {
-                    Nodo* temp=n->filhos[i];
-                    n->filhos[i]=itemNodo;
-                    itemNodo=temp;
-                }
-            }
-            /*
-            //if(value==2)
-            {
-                cout << "PRINT 2: ";
-                for(int j=0; j<quant_filhos; j++)
-                {
-                    if(filhos[j] != NULL)
-                        filhos[j]->printNode();
-                    else
-                        cout << " NULL ";
-                }
-                cout << endl;
-            }
-            */
-            return true;
+            cout << chaves[i];
+            if(i<(len-1)) cout << ",";
         }
-
-    public:
-        bool isRaiz=false;
-        bool isFolha=false;
-        int quant_chaves;
-        int quant_filhos;
-
-        Nodo(int t) //t --> grau maximo
-        {
-            chaves = new int[t];
-            filhos = new Nodo*[t+1];
-            quant_chaves=t;
-            quant_filhos=t+1;
-            isRaiz=false;
-            isFolha=true;
-            ivc=0;
-            ivf=0;
-            for(int i=0; i<quant_chaves; i++)
-                chaves[i] = INT_MAX;
-            for(int i=0; i<quant_chaves; i++)
-                filhos[i] = NULL;
-        }
-
-        bool is_folha()
-        {
-            for(int i=0; i<quant_chaves; i++)
-            {
-                if(filhos[i]!=NULL)
-                    return false;
-            }
-            return true;
-        }
-
-        ReturnInfo* breakNode(Nodo* n, int tam)
-        {
-            int mediana=0; //indice da mediana;
-            Nodo* irmao = new Nodo(quant_chaves);
-            ReturnInfo* rinfo = new ReturnInfo();
-
-            if(tam%2==0) //numero par de chaves
-                mediana=(tam/2)-1;
-            else //numero impar de chaves
-                mediana=tam/2;
-            rinfo->mediana = n->chaves[mediana];
-
-            for(int i=mediana+1, j=0; i<tam; i++, j++)//copia chaves (valores) depois da mediana do nodo atual, para o novo nodo filho;
-            {
-                irmao->chaves[j]=chaves[i];
-                irmao->ivc += 1;
-            }
-            for(int i=mediana; i<tam; i++)
-            {
-                n->chaves[i]=INT_MAX;
-                n->ivc -= 1;
-            }
-
-            rinfo->esq = n;
-            rinfo->dir = irmao;
-            rinfo->isBreak = true;
-            return rinfo;
-        }
-
-        void breakNodeRaiz(Nodo* n, int tam)
-        {
-            int mediana=0; //indice da mediana;
-            Nodo* esq = new Nodo(quant_chaves);
-            Nodo* dir = new Nodo(quant_chaves);
-
-            if(tam%2==0) //numero par de chaves
-                mediana=(tam/2)-1;
-            else //numero impar de chaves
-                mediana=tam/2;
-
-            for(int i=0; i<mediana; i++)//copia chaves (valores) antes da mediana do nodo atual, para o novo nodo filho esq;
-            {
-                esq->chaves[i]=n->chaves[i];
-                esq->ivc += 1;
-            }
-            for(int i=mediana+1, j=0; i<tam; i++, j++)//copia chaves (valores) depois da mediana do nodo atual, para o novo nodo filho dir;
-            {
-                dir->chaves[j]=n->chaves[i];
-                dir->ivc += 1;
-            }
-
-            n->chaves[0]=n->chaves[mediana]; //reposicionar a medina no nodo atual
-            n->ivc=1;
-            for(int i=1; i<tam; i++)
-                n->chaves[i]=INT_MAX;
-
-            if(!n->is_folha()) //se RAIZ tiver filhos, é feito o redirecionamento dos apontadores.
-            {
-                bool first=true;
-                for(int i=0,e=0,d=0; i<quant_filhos; i++)
-                {
-                    if(first) //inicia pelo nodo esq
-                    {
-                        if(esq->chaves[e] == INT_MAX)
-                        {
-                            first=false;
-                            esq->filhos[e] = n->filhos[i];
-                            e++;
-                        }
-                        else if(n->filhos[i]->chaves[0] < esq->chaves[e])
-                        {
-                            esq->filhos[e] = n->filhos[i];
-                            e++;
-                        }
-                    }
-                    else //termina no nodo dir
-                    {
-                        if(n->filhos[i]->chaves[0] < dir->chaves[d])
-                        {
-                            dir->filhos[d] = n->filhos[i];
-                            d++;
-                        }
-                    }
-                }
-
-                for(int i=2; i<quant_filhos; i++)
-                {
-                    if(n->filhos[i] != NULL)
-                    {
-                        n->filhos[i]=NULL;
-                    }
-                }
-            }
-            
-            //redirecionar os ponteiros filhos do nodo atual, para esq e dir
-            n->filhos[0]=esq;
-            n->filhos[1]=dir;
-        }
-
-        void breakNodeRaizOld(Nodo* n, int tam)
-        {
-            int mediana=0; //indice da mediana;
-            Nodo* esq = new Nodo(quant_chaves);
-            Nodo* dir = new Nodo(quant_chaves);
-
-            if(tam%2==0) //numero par de chaves
-                mediana=(tam/2)-1;
-            else //numero impar de chaves
-                mediana=tam/2;
-
-            for(int i=0; i<mediana; i++)//copia chaves (valores) antes da mediana do nodo atual, para o novo nodo filho esq;
-            {
-                esq->chaves[i]=chaves[i];
-                esq->ivc += 1;
-            }
-            for(int i=mediana+1, j=0; i<tam; i++, j++)//copia chaves (valores) depois da mediana do nodo atual, para o novo nodo filho dir;
-            {
-                dir->chaves[j]=chaves[i];
-                dir->ivc += 1;
-            }
-
-            chaves[0]=chaves[mediana]; //reposicionar a medina no nodo atual
-            ivc=1;
-            for(int i=1; i<tam; i++)
-                chaves[i]=INT_MAX;
-            
-            //redirecionar os ponteiros filhos do nodo atual, para esq e dir
-            filhos[0]=esq;
-            filhos[1]=dir;
-        }
-        
-        void print()
-        {
-            //cout << "(";
-            for(int i=0; i<ivc; i++)
-            {
-                if(chaves[i] != INT_MAX)
-                    cout << chaves[i];
-                if(i<(ivc-1)) cout << ",";
-            }
-            //cout << ")";
-        }
-        void printNode()
-        {
-            cout << "[";
-            for(int i=0; i<quant_chaves; i++)
-            {
-                if(chaves[i] != INT_MAX)
-                    cout << chaves[i];
-                else
-                    cout << "x";
-                
-                if(i<(quant_chaves-1)) cout << ",";
-            }
-            cout << "]";
-        }
-
-    friend class ArvoreB;
-    friend class ReturnInfo;
+    }
+friend class ArvoreB;
 };
 
 class ArvoreB
 {
-    private:
-        Nodo* raiz;
-        ReturnInfo* inserir(int value, Nodo* n);
-        bool pesquisar(int value, Nodo* n)
-        {
-            Nodo* f = NULL; //nodo auxiliar, para salvar o filho, que será verificado, na proxima chamada.
-            for(int i=0; i<grau_max; i++)
-            {
-                if(value==n->chaves[i]) //se achar o valor, retorna a confirmação.
-                    return true;
-            }
-            if(n->isFolha) //se o NÓ for FOLHA, o elemento não está na arvore.
-                return false;
-
-            for(int i=0; i<grau_max; i++) //verica qual filho, será o proximo a ser verificado.
-            {
-                if(value < n->chaves[i])
-                {
-                    if(n->filhos[i] != NULL)
-                        f = n->filhos[i];
-                    else
-                        return false;
-                    break;
-                }
-            }
-            if(f==NULL) //verifica se o ultimo filho, é proximo a ser verificado.
-            {
-                if(value > n->chaves[grau_max-1])
-                    f = n->filhos[grau_max-1];
-            }
-            return pesquisar(value,f);
-        }
-    public:
-        int grau_max=0;
-        ArvoreB(int arg_grau_max)
-        {
-            raiz=NULL;
-            grau_max=arg_grau_max;
-        }
-        bool inserir(int valor)
-        {
-            ReturnInfo* rInfo;
-            if(raiz==NULL)
-            {
-                raiz = new Nodo(grau_max);
-                raiz->isRaiz=true;
-                rInfo = inserir(valor,raiz);
-                return rInfo->isInsert;
-            }
-            else
-            {
-                rInfo = inserir(valor,raiz);
-                return rInfo->isInsert;
-            }
-        }
-        void remover(int valor);
-        bool pesquisar(int valor)
-        {
-            return pesquisar(valor,raiz);
-        }
-        void preencherPorAtacado();
-        void clear();
-        void print(Nodo* n)
-        {
-            if(n->is_folha())
-            {
-                n->print();
-            }
-
-            for(int i=0; i<grau_max; i++)
-            {
-                if(n->filhos[i] != NULL)
-                {
-                    cout << "(";
-                    print(n->filhos[i]);
-                    cout << ")";
-                    if(n->chaves[i] != INT_MAX)
-                        cout << " " << n->chaves[i] << " ";
-                }
-            }
-        }
-        void print()
-        {
-            cout << "(";
-            print(raiz);
-            cout << ")"<<endl;
-        }
-        void printTree(Nodo* n)
-        {
-            //cout << "(";
-            if(n->is_folha())
-            {
-                n->printNode();
-            }
-
-            for(int i=0; i<grau_max; i++)
-            {
-                if(n->filhos[i] != NULL)
-                {
-                    cout << "(";
-                    printTree(n->filhos[i]);
-                    cout << ")";
-                    if(n->chaves[i] != INT_MAX)
-                        cout << " " << n->chaves[i] << " ";
-                    else
-                        cout << " NULL ";
-                }
-            }
-            //cout << ")";
-        }
-        void printTree()
-        {
-            cout << "{ ";
-            printTree(raiz);
-            cout << " }"<<endl;
-        }
-
-        ReturnInfo* inserirMediana(int value, Nodo* n, Nodo* dir)
-        {
-            ReturnInfo* rInfo;
-            bool isInsert = n->insertMediana(n,value,dir);
-
-            if(n->ivc==grau_max) //breakNode - sobe a mediana(posição) - nodo deixa de ser folha
-            {
-                if(n->isRaiz)
-                {
-                    n->breakNodeRaiz(n,grau_max);
-                    if(n->isFolha) n->isFolha=false;
-                    rInfo = new ReturnInfo();
-                    rInfo->isInsert=isInsert;
-                    return rInfo;
-                }
-                else
-                {
-                    rInfo = n->breakNode(n,grau_max);
-                    rInfo->isInsert=isInsert;
-                    return rInfo;
-                }
-            }
-            rInfo = new ReturnInfo();
-            return rInfo;
-        }
-
-        void printTest(Nodo* n)
-        {
-            n->printNode();
-            cout << " ---> ";
-            for(int i=0; i<=grau_max; i++)
-            {
-                if(n->filhos[i] != NULL)
-                {
-                    n->filhos[i]->printNode();
-                }
-            }
-        }
-        void printTest()
-        {
-            cout << "{ ";
-            printTest(raiz);
-            cout << " }"<<endl;
-        }
-
-        friend class ReturnInfo;
-};
-
-ReturnInfo* ArvoreB::inserir(int value, Nodo* n)
-{
-    ReturnInfo* rInfo;
-    if(n->is_folha())
+private:
+    Nodo* raiz;
+    void CreateRoot()
     {
-        for(int i=0; i<grau_max; i++)
+        raiz = new Nodo(t);
+        raiz->isFolha=true;
+        raiz->len=0;
+    }
+    bool Search(Nodo* n, int k)
+    {
+    }
+    void SplitRaiz(Nodo* n, int i, Nodo* esq)
+    {
+        cout << "  SplitRaiz  i: " << i << endl;
+        cout << "  1: "; printNodoAndChild(n);
+        cout << "  2: "; printNodoAndChild(esq);
+        Nodo* dir = new Nodo(t);  //z
+        //Nodo* esq = n->filhos[i]; //y
+        dir->isFolha=esq->isFolha;
+        //dir->len=t-1;
+        for(int j=1; j<=(t-1); j++) //passa para dir as maiores chaves
         {
-            if(value==n->chaves[i]) //Não inserir valor repetido.
+            InsertNoFull(dir,esq->chaves[j+(t-1)]);
+        }
+        /*if(!esq->is_folha())
+        {
+            cout << "    j: " <<  1 << "  t: " << t << "  (j<=t)" << endl;
+            for(int j=1; j<=t; j--)
             {
-                cout << "ALERT! "<< value << " ja existe na TREE." << endl;
-                rInfo = new ReturnInfo();
-                rInfo->isInsert=false;
-                return rInfo;
-            }   
-        }
-
-        bool isInsert = n->insertChave(n->chaves,grau_max,value);
-        //cout<<"isInsert: "<<isInsert<<endl;
-        /*
-        if(value==2)
+                cout << "    j: " << j << "  t: " << t << "    esq->filhos[j+t]: "; printNodoAndChild(esq->filhos[j+t]);
+                dir->filhos[j] = esq->filhos[j+t];
+            }
+        }*/
+        if(!esq->is_folha())
         {
-            cout << "Nodo apos o INSERT 2: ";
-            n->printNode();
-            cout << endl;
+            cout << "    j: " <<  dir->len << "  t: " << t << "  (j<=t)" << endl;
+            for(int j=dir->len, m=0; m<(dir->len+1); j--,m++)
+            {
+                cout << "    j: " << j << "  t: " << t << "    esq->filhos[j+t]: "; printNodoAndChild(esq->filhos[j+t]);
+                dir->filhos[j] = esq->filhos[j+t];
+                esq->filhos[j+t] = NULL;
+            }
         }
-        */
+        esq->len=t-1; //ajusta a contagem de chaves para o nodo com as menores chaves
+
+        for(int j=n->len+1; j<(i+1); j++)
+        {
+            n->filhos[j+1] = n->filhos[j]; //empurra os filhos para direita
+        }
+        cout << "  esq: "; printNodoAndChild(esq);
+        cout << "  dir: "; printNodoAndChild(dir);
+        cout << "  3: "; printRaiz();
+        n->filhos[i]=dir; //inserem dir como filho de n
+        cout << "  4: "; printRaiz();
+        //n->filhos[i+1] = dir;
+        for(int j=n->len; j<i; j++)
+        {
+            n->chaves[j+1] = n->chaves[j];
+        }
+        n->chaves[i-1] = esq->chaves[t-1];//move a chave mediana de esq para n
+        cout << "    MEDIANA  n->chaves[i-1] i-1: " << i-1 << "  esq->chaves[t-1]: " << esq->chaves[t-1] << endl;
+        n->len = n->len+1; //ajusta a contagem de chaves de n
+        cout << "  5: "; imprimir();
+        cout << "  6: "; printRaiz();
+        cout << "  7: "; printNodoAndChild(n);
+    }
+    void SplitChild(Nodo* n, int i, Nodo* esq)
+    {
+        cout << "  SplitChild  i: " << i << endl;
+        cout << "  1: "; printNodoAndChild(n);
+        cout << "  2: "; printNodoAndChild(esq);
+        Nodo* dir = new Nodo(t);  //z
+        //Nodo* esq = n->filhos[i]; //y
+        dir->isFolha=esq->isFolha;
+        //dir->len=t-1;
+        /*for(int j=1; j<=(t-1); j++) //passa para dir as maiores chaves
+        {
+            dir->chaves[j]=esq->chaves[j+t];
+        }*/
+        for(int j=1; j<=(t-1); j++) //passa para dir as maiores chaves
+        {
+            InsertNoFull(dir,esq->chaves[j+(t-1)]);
+        }
+        if(!esq->is_folha())
+        {
+            for(int j=1; j<=t; j++)
+            {
+                dir->filhos[j] = esq->filhos[j+t];
+                esq->filhos[j+t] = NULL;
+            } 
+        }
+        esq->len=t-1; //ajusta a contagem de chaves para o nodo com as menores chaves
+        cout << "    n->len+1: " <<  n->len+1 << "  i: " << i << "  (j<(i+1))" << endl;
+        for(int j=n->len+1; j>i; j--) //inserem dir como filho de n
+        {
+            n->filhos[j+1] = n->filhos[j]; //empurra os filhos para direita
+        }
+        cout << "  3: "; printNodoAndChild(n);
+        n->filhos[i+1] = dir; //inserem dir como filho de n
+        cout << "  4: "; printNodoAndChild(n);
+        cout << "    n->len: " <<  n->len << "  i: " << i << "  (j<i)" << endl;
+        /*for(int j=n->len; j<i; j++)
+        {
+            n->chaves[j+1] = n->chaves[j];
+        }*/
+        for(int j=n->len-1; j>=i; j--)
+        {
+            n->chaves[j+1] = n->chaves[j];
+        }
+        n->chaves[i] = esq->chaves[t-1];//move a chave mediana de esq para n
+        cout << "    MEDIANA n->chaves[i] i: " << i << "  esq->chaves[t-1]: " << esq->chaves[t-1] << endl;
+        n->len = n->len+1; //ajusta a contagem de chaves de n
+
+        cout << "  5: "; printNodoAndChild(n);
+    }
+    void InsertNoFull(Nodo* n, int k)
+    {
+        int i=n->len; //quantidade de chaves no nodo
+        if(n->is_folha())
+        {
+            while(i>=1 && k<n->chaves[i-1]) //enquanto k < chave na ultima posiçao
+            {
+                n->chaves[i] = n->chaves[i-1]; //mover a chave para a direita
+                i = i-1;
+            }
+            n->chaves[i]=k;
+            n->len = n->len+1;
+        }
+        else
+        {
+            cout << "    -  InsertNoFull i: " << i << "  k: " << k << endl;
+            while(i>=1 && k<n->chaves[i-1]) //determina o filho de n
+            {
+                i-=1;
+            }
+            //i+=1;
+            cout << "    -  InsertNoFull 2  i: " << i << "  k: " << k << endl;
+            if(n->filhos[i]->len == (2*t-1)) //verifica se a recursão desceria até um filho completo
+            {
+                cout << "  n->filhos[i]->len == (2*t-1): " << (2*t-1) << endl;
+                cout << "    dividir nodo: ";
+                n->filhos[i]->print();
+                cout << endl;
+                SplitChild(n,i,n->filhos[i]); //dividi esse filho em 2 filhos não-completos
+                if(k > n->chaves[i]) //determina qual dos 2 filhos é agora o correto para descer
+                    i+=1;
+            }
+            cout << "    -  InsertNoFull 3  i: " << i << "  k: " << k << endl;
+            cout << "    inserir k no nodo: ";
+            n->filhos[i]->print();
+            cout<<endl;
+            InsertNoFull(n->filhos[i],k); //utiliza recursão para inserir na sub-arvore apropriada
+        }
         
-        //2º recursão - vericar se o noco está cheio
-        //if(n->ivc==grau_max){} //breakNode - sobe mediana - nodo deixa de ser folha
-
-        if(n->ivc==grau_max) //breakNode - sobe a mediana(posição) - nodo deixa de ser folha
+    }
+    void Insert(int k)
+    {
+        if(raiz->len==(2*t-1)) //a raiz está cheia
         {
-            if(n->isRaiz)
-            {
-                n->breakNodeRaiz(n,grau_max);
-                if(n->isFolha) n->isFolha=false;
-                rInfo = new ReturnInfo();
-                rInfo->isInsert=isInsert;
-                return rInfo;
-            }
-            else
-            {
-                rInfo = n->breakNode(n,grau_max);
-                /*
-                cout << "Nodo apos o break: ";
-                n->printNode();
-                cout << endl;
-                cout << "Nodo esq: ";
-                rInfo->esq->printNode();
-                cout << endl;
-                cout << "Nodo dir: ";
-                rInfo->dir->printNode();
-                cout << endl;
-                cout << "Mediana: "<<rInfo->mediana<<endl;
-                */
-
-                rInfo->isInsert=isInsert;
-                return rInfo;
-            }
+            cout << "  COMPLETO: raiz->len==(2*t-1) " << (2*t-1) << "  k: " << k << endl;
+            Nodo* r = raiz;
+            Nodo* s = new Nodo(t);
+            raiz=s;
+            s->isFolha=false;
+            s->len=0;
+            s->filhos[0]=r;
+            //SplitRaiz(raiz,1,r);
+            SplitRaiz(s,1,r);
+            InsertNoFull(s,k);
         }
-        rInfo = new ReturnInfo();
-        rInfo->isInsert=isInsert;
-        return rInfo;
+        else
+            InsertNoFull(raiz,k);
     }
-
-    rInfo = new ReturnInfo();
-    //BUSCAR o valor nas chaves do nodo atual
-    Nodo* f = NULL; //nodo auxiliar, para salvar o filho, que será verificado, na proxima chamada.
-
-    for(int i=0; i<grau_max; i++) //proibido inserir valores repetidos
+    void Print(Nodo* n)
     {
-        if(value==n->chaves[i]) //Não inserir valor repetido.
-        {
-            cout << "ALERT! "<< value << " ja existe na ARVORE." << endl;
-            rInfo->isInsert=false;
-            return rInfo;
-        }   
-    }
-
-    for(int i=0; i<grau_max; i++) //verica qual filho, será o proximo a ser verificado.
-    {
-        if(value < n->chaves[i])
+        if(n->is_folha())
+            n->print();
+        for(int i=0; i<n->maxf; i++)
         {
             if(n->filhos[i] != NULL)
-                f = n->filhos[i];
-            else
             {
-                cout << "ALERT! n->filhos[i] == NULL" << endl;
-                rInfo->isInsert=false;
-                return rInfo;
+                cout << "(";
+                Print(n->filhos[i]);
+                cout << ")";
+                if(i < n->len)
+                    cout << " " << n->chaves[i] << " ";
             }
-            break;
         }
     }
-    if(f==NULL) //verifica se o ultimo filho, é proximo a ser verificado.
+public:
+    int t; //grau minimo
+    ArvoreB(int arg_grau_min)
     {
-        if(value > n->chaves[grau_max-1])
-            f = n->filhos[grau_max-1];
+        t=arg_grau_min;
+        CreateRoot();
+        cout << "(grau min) t = " << arg_grau_min << endl;
     }
-
-    ReturnInfo* retinfo = inserir(value,f);
-    if(retinfo->isBreak)
+    bool busca(int valor)
     {
-        return inserirMediana(retinfo->mediana,n,retinfo->dir);
+        if(raiz==NULL)
+        {
+            cout << "BUSCA não pode ser executada, RAIZ == NULL"<<endl;
+            return false;
+        }
+        return Search(raiz,valor);
     }
-    return rInfo;
-}
-
-void ArvoreB::remover(int valor)
-{
-    
-}
-
-void ArvoreB::clear()
-{
-    
-}
+    void inserir(int valor)
+    {
+        Insert(valor);
+    }
+    void imprimir()
+    {
+        cout << "(";
+        Print(raiz);
+        cout << ")"<<endl;
+    }
+    void printRaiz()
+    {
+        cout << "[";
+        raiz->print();
+        cout << "]";
+        cout << " ---> ";
+        for(int i=0; i<raiz->maxf; i++)
+        {
+            cout << "(";
+            if(raiz->filhos[i] != NULL)
+                raiz->filhos[i]->print();
+            cout << ")";
+        }
+        cout<<endl;
+    }
+    void printNodoAndChild(Nodo* n)
+    {
+        cout << "Nodo: [";
+        n->print();
+        cout << "]";
+        cout << " ---> ";
+        for(int i=0; i<n->maxf; i++)
+        {
+            cout << "(";
+            if(n->filhos[i] != NULL)
+                n->filhos[i]->print();
+            cout << ")";
+        }
+        cout<<endl;
+    }
+};
 
 #endif
