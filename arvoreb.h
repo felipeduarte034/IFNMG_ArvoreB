@@ -234,9 +234,9 @@ public:
     {
         t=arg_grau_min;
         CreateRoot();
-        cout << "(grau min) t = " << arg_grau_min << endl;
+        //cout << "(grau min) t = " << arg_grau_min << endl;
     }
-    bool busca(int valor)
+    bool buscar(int valor)
     {
         if(raiz==NULL)
         {
