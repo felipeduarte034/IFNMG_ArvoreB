@@ -7,16 +7,14 @@ using namespace std;
 class Nodo
 {
 private:
-    int* chaves; //#chaves[2t-1]
+    int* chaves; //#chaves[t-1, 2t-1]
     Nodo** filhos; //#filhos[2t+1] - vetor de ponteiros
     int len; //quantidade de chaves no nodo
-    //int maxc; //quantidade maxima de chaves
     int maxf; //quantidade maxima de filhos
 public:
     bool isFolha=false;
     Nodo(int t) //t --> grau minimo
     {
-        //maxc = 2*t-1;
         maxf = 2*t;
         chaves = new int[2*t-1];
         filhos = new Nodo*[2*t];
@@ -34,7 +32,7 @@ public:
         return true;
     }
     
-    void print()
+    void print() //printa as chaves em sequencia separadas por virgula
     {
         for(int i=0; i<len; i++)
         {
@@ -57,35 +55,38 @@ private:
     }
     bool Search(Nodo* n, int k)
     {
+        int i=0;
+        while(i<n->len && k>n->chaves[i]) //ajusta o indice do filho
+        {
+            i+=1;
+        }
+        if(i<n->len && k==n->chaves[i]) //verica se a valor buscado está nas chaves do nodo
+        {
+            return true;
+        }
+        else if(n->is_folha()) //se for folha o elemento não está contido na arvore
+        {
+            return false;
+        }
+        return Search(n->filhos[i],k);
     }
     void SplitRaiz(Nodo* n, int i, Nodo* esq)
     {
-        cout << "  SplitRaiz  i: " << i << endl;
+        /*cout << "  SplitRaiz  i: " << i << endl;
         cout << "  1: "; printNodoAndChild(n);
-        cout << "  2: "; printNodoAndChild(esq);
-        Nodo* dir = new Nodo(t);  //z
-        //Nodo* esq = n->filhos[i]; //y
+        cout << "  2: "; printNodoAndChild(esq);*/
+        Nodo* dir = new Nodo(t);
         dir->isFolha=esq->isFolha;
-        //dir->len=t-1;
         for(int j=1; j<=(t-1); j++) //passa para dir as maiores chaves
         {
             InsertNoFull(dir,esq->chaves[j+(t-1)]);
         }
-        /*if(!esq->is_folha())
-        {
-            cout << "    j: " <<  1 << "  t: " << t << "  (j<=t)" << endl;
-            for(int j=1; j<=t; j--)
-            {
-                cout << "    j: " << j << "  t: " << t << "    esq->filhos[j+t]: "; printNodoAndChild(esq->filhos[j+t]);
-                dir->filhos[j] = esq->filhos[j+t];
-            }
-        }*/
         if(!esq->is_folha())
         {
-            cout << "    j: " <<  dir->len << "  t: " << t << "  (j<=t)" << endl;
+            //cout << "    j: " <<  dir->len << "  t: " << t << "  (j<=t)" << endl;
             for(int j=dir->len, m=0; m<(dir->len+1); j--,m++)
             {
-                cout << "    j: " << j << "  t: " << t << "    esq->filhos[j+t]: "; printNodoAndChild(esq->filhos[j+t]);
+                //cout << "    j: " << j << "  t: " << t << "    esq->filhos[j+t]: "; printNodoAndChild(esq->filhos[j+t]);
                 dir->filhos[j] = esq->filhos[j+t];
                 esq->filhos[j+t] = NULL;
             }
@@ -96,71 +97,63 @@ private:
         {
             n->filhos[j+1] = n->filhos[j]; //empurra os filhos para direita
         }
-        cout << "  esq: "; printNodoAndChild(esq);
+        /*cout << "  esq: "; printNodoAndChild(esq);
         cout << "  dir: "; printNodoAndChild(dir);
-        cout << "  3: "; printRaiz();
+        cout << "  3: "; printRaiz();*/
         n->filhos[i]=dir; //inserem dir como filho de n
-        cout << "  4: "; printRaiz();
-        //n->filhos[i+1] = dir;
+        //cout << "  4: "; printRaiz();
         for(int j=n->len; j<i; j++)
         {
             n->chaves[j+1] = n->chaves[j];
         }
         n->chaves[i-1] = esq->chaves[t-1];//move a chave mediana de esq para n
-        cout << "    MEDIANA  n->chaves[i-1] i-1: " << i-1 << "  esq->chaves[t-1]: " << esq->chaves[t-1] << endl;
+        //cout << "    MEDIANA  n->chaves[i-1] i-1: " << i-1 << "  esq->chaves[t-1]: " << esq->chaves[t-1] << endl;
         n->len = n->len+1; //ajusta a contagem de chaves de n
-        cout << "  5: "; imprimir();
+        /*cout << "  5: "; imprimir();
         cout << "  6: "; printRaiz();
-        cout << "  7: "; printNodoAndChild(n);
+        cout << "  7: "; printNodoAndChild(n);*/
     }
     void SplitChild(Nodo* n, int i, Nodo* esq)
     {
-        cout << "  SplitChild  i: " << i << endl;
+        /*cout << "  SplitChild  i: " << i << endl;
         cout << "  1: "; printNodoAndChild(n);
-        cout << "  2: "; printNodoAndChild(esq);
-        Nodo* dir = new Nodo(t);  //z
-        //Nodo* esq = n->filhos[i]; //y
+        cout << "  2: "; printNodoAndChild(esq);*/
+        Nodo* dir = new Nodo(t);
         dir->isFolha=esq->isFolha;
-        //dir->len=t-1;
-        /*for(int j=1; j<=(t-1); j++) //passa para dir as maiores chaves
-        {
-            dir->chaves[j]=esq->chaves[j+t];
-        }*/
         for(int j=1; j<=(t-1); j++) //passa para dir as maiores chaves
         {
             InsertNoFull(dir,esq->chaves[j+(t-1)]);
         }
         if(!esq->is_folha())
         {
-            for(int j=1; j<=t; j++)
+            //cout << "    j: " <<  dir->len << "  t: " << t << "  (j<=t)" << endl;
+            for(int j=dir->len, m=0; m<(dir->len+1); j--,m++)
             {
+                //cout << "    j: " << j << "  t: " << t << "    esq->filhos[j+t]: "; printNodoAndChild(esq->filhos[j+t]);
                 dir->filhos[j] = esq->filhos[j+t];
                 esq->filhos[j+t] = NULL;
-            } 
+            }
         }
         esq->len=t-1; //ajusta a contagem de chaves para o nodo com as menores chaves
-        cout << "    n->len+1: " <<  n->len+1 << "  i: " << i << "  (j<(i+1))" << endl;
+        //cout << "    n->len+1: " <<  n->len+1 << "  i: " << i << "  (j<(i+1))" << endl;
         for(int j=n->len+1; j>i; j--) //inserem dir como filho de n
         {
             n->filhos[j+1] = n->filhos[j]; //empurra os filhos para direita
         }
-        cout << "  3: "; printNodoAndChild(n);
+        /*cout << "  esq: "; printNodoAndChild(esq);
+        cout << "  dir: "; printNodoAndChild(dir);
+        cout << "  3: "; printNodoAndChild(n);*/
         n->filhos[i+1] = dir; //inserem dir como filho de n
-        cout << "  4: "; printNodoAndChild(n);
-        cout << "    n->len: " <<  n->len << "  i: " << i << "  (j<i)" << endl;
-        /*for(int j=n->len; j<i; j++)
-        {
-            n->chaves[j+1] = n->chaves[j];
-        }*/
+        //cout << "  4: "; printNodoAndChild(n);
+        //cout << "    n->len: " <<  n->len << "  i: " << i << "  (j<i)" << endl;
         for(int j=n->len-1; j>=i; j--)
         {
             n->chaves[j+1] = n->chaves[j];
         }
         n->chaves[i] = esq->chaves[t-1];//move a chave mediana de esq para n
-        cout << "    MEDIANA n->chaves[i] i: " << i << "  esq->chaves[t-1]: " << esq->chaves[t-1] << endl;
+        //cout << "    MEDIANA n->chaves[i] i: " << i << "  esq->chaves[t-1]: " << esq->chaves[t-1] << endl;
         n->len = n->len+1; //ajusta a contagem de chaves de n
-
-        cout << "  5: "; printNodoAndChild(n);
+        //cout << "  5: "; printNodoAndChild(n);
     }
     void InsertNoFull(Nodo* n, int k)
     {
@@ -177,27 +170,27 @@ private:
         }
         else
         {
-            cout << "    -  InsertNoFull i: " << i << "  k: " << k << endl;
+            //cout << "    -  InsertNoFull i: " << i << "  k: " << k << endl;
             while(i>=1 && k<n->chaves[i-1]) //determina o filho de n
             {
                 i-=1;
             }
             //i+=1;
-            cout << "    -  InsertNoFull 2  i: " << i << "  k: " << k << endl;
+            //cout << "    -  InsertNoFull 2  i: " << i << "  k: " << k << endl;
             if(n->filhos[i]->len == (2*t-1)) //verifica se a recursão desceria até um filho completo
             {
-                cout << "  n->filhos[i]->len == (2*t-1): " << (2*t-1) << endl;
+                /*cout << "  n->filhos[i]->len == (2*t-1): " << (2*t-1) << endl;
                 cout << "    dividir nodo: ";
                 n->filhos[i]->print();
-                cout << endl;
+                cout << endl;*/
                 SplitChild(n,i,n->filhos[i]); //dividi esse filho em 2 filhos não-completos
                 if(k > n->chaves[i]) //determina qual dos 2 filhos é agora o correto para descer
                     i+=1;
             }
-            cout << "    -  InsertNoFull 3  i: " << i << "  k: " << k << endl;
+            /*cout << "    -  InsertNoFull 3  i: " << i << "  k: " << k << endl;
             cout << "    inserir k no nodo: ";
             n->filhos[i]->print();
-            cout<<endl;
+            cout<<endl;*/
             InsertNoFull(n->filhos[i],k); //utiliza recursão para inserir na sub-arvore apropriada
         }
         
@@ -206,14 +199,13 @@ private:
     {
         if(raiz->len==(2*t-1)) //a raiz está cheia
         {
-            cout << "  COMPLETO: raiz->len==(2*t-1) " << (2*t-1) << "  k: " << k << endl;
+            //cout << "  COMPLETO: raiz->len==(2*t-1) " << (2*t-1) << "  k: " << k << endl;
             Nodo* r = raiz;
             Nodo* s = new Nodo(t);
             raiz=s;
             s->isFolha=false;
             s->len=0;
             s->filhos[0]=r;
-            //SplitRaiz(raiz,1,r);
             SplitRaiz(s,1,r);
             InsertNoFull(s,k);
         }

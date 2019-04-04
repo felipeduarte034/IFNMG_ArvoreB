@@ -1,5 +1,6 @@
 #include <iostream>
 #include "arvoreb.h"
+#include "commands.h"
 using namespace std;
 
 int main(int argc, char const *argv[])
@@ -25,24 +26,14 @@ int main(int argc, char const *argv[])
     ///*
     mytree.inserir(10);
     mytree.imprimir();
-    cout << "raiz: ";
-    mytree.printRaiz();
     mytree.inserir(20);
     mytree.imprimir();
-    cout << "raiz: ";
-    mytree.printRaiz();
     mytree.inserir(30);
     mytree.imprimir();
-    cout << "raiz: ";
-    mytree.printRaiz();
     mytree.inserir(40);
     mytree.imprimir();
-    cout << "raiz: ";
-    mytree.printRaiz();
     mytree.inserir(15);
     mytree.imprimir();
-    cout << "raiz: ";
-    mytree.printRaiz();
     mytree.inserir(5);
     mytree.imprimir();
     mytree.inserir(50);
@@ -80,6 +71,37 @@ int main(int argc, char const *argv[])
     mytree.inserir(17);
     mytree.imprimir();
     //*/
+
+    cout << "====BUSCA====" << endl;
+    cout << 11 << ((mytree.busca(11))?(" encontrado"):(" não")) << endl;
+    cout << -1 << ((mytree.busca(-1))?(" encontrado"):(" não")) << endl;
+
+    cout << 10 << ((mytree.busca(10))?(" encontrado"):(" não")) << endl;
+    cout << 20 << ((mytree.busca(20))?(" encontrado"):(" não")) << endl;
+    cout << 30 << ((mytree.busca(30))?(" encontrado"):(" não")) << endl;
+    cout << 40 << ((mytree.busca(40))?(" encontrado"):(" não")) << endl;
+    cout << 15 << ((mytree.busca(15))?(" encontrado"):(" não")) << endl;
+    cout << 5 << ((mytree.busca(5))?(" encontrado"):(" não")) << endl;
+    cout << 50 << ((mytree.busca(50))?(" encontrado"):(" não")) << endl;
+    cout << 60 << ((mytree.busca(60))?(" encontrado"):(" não")) << endl;
+    cout << 70 << ((mytree.busca(70))?(" encontrado"):(" não")) << endl;
+    cout << 25 << ((mytree.busca(25))?(" encontrado"):(" não")) << endl;
+    cout << 35 << ((mytree.busca(35))?(" encontrado"):(" não")) << endl;
+    cout << 18 << ((mytree.busca(18))?(" encontrado"):(" não")) << endl;
+    cout << 22 << ((mytree.busca(22))?(" encontrado"):(" não")) << endl;
+    cout << 80 << ((mytree.busca(80))?(" encontrado"):(" não")) << endl;
+    cout << 90 << ((mytree.busca(90))?(" encontrado"):(" não")) << endl;
+    cout << 100 << ((mytree.busca(100))?(" encontrado"):(" não")) << endl;
+    cout << 110 << ((mytree.busca(110))?(" encontrado"):(" não")) << endl;
+    cout << 120 << ((mytree.busca(120))?(" encontrado"):(" não")) << endl;
+    cout << 130 << ((mytree.busca(130))?(" encontrado"):(" não")) << endl;
+    cout << 19 << ((mytree.busca(19))?(" encontrado"):(" não")) << endl;
+    cout << 16 << ((mytree.busca(16))?(" encontrado"):(" não")) << endl;
+    cout << 21 << ((mytree.busca(21))?(" encontrado"):(" não")) << endl;
+    cout << 17 << ((mytree.busca(17))?(" encontrado"):(" não")) << endl;
+
+    cout << 200 << ((mytree.busca(200))?(" encontrado"):(" não")) << endl;
+    cout << 300 << ((mytree.busca(300))?(" encontrado"):(" não")) << endl;
 
     cout << "====RAIZ====" << endl;
     mytree.printRaiz();
